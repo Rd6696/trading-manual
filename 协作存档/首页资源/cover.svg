@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
+<title id="title">RGB Trading Manual</title><desc id="desc">Dark editorial cover for a trading research notebook. Observe, define, test, review.</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101c30"/><stop offset="1" stop-color="#080e19"/></linearGradient>
+<linearGradient id="accent" x2="1"><stop stop-color="#7ce7db"/><stop offset="1" stop-color="#8bb9ff"/></linearGradient>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#9badd0" stroke-opacity=".07"/></pattern>
+</defs>
+<rect width="1280" height="360" rx="20" fill="url(#bg)"/>
+<rect x="730" width="550" height="360" rx="20" fill="url(#grid)"/>
+<rect x="56" y="52" width="4" height="24" rx="2" fill="url(#accent)"/>
+<text x="76" y="70" fill="#9fb0c9" font-family="Arial, sans-serif" font-size="15" letter-spacing="4">RGB / RESEARCH NOTEBOOK</text>
+<text x="56" y="153" fill="#f4f7fc" font-family="Arial, sans-serif" font-size="64" font-weight="700" letter-spacing="-2">TRADING</text>
+<text x="56" y="221" fill="url(#accent)" font-family="Arial, sans-serif" font-size="64" font-weight="700" letter-spacing="-2">MANUAL</text>
+<path d="M58 258H564" stroke="#2b3b51"/>
+<text x="58" y="296" fill="#aab9ce" font-family="Arial, sans-serif" font-size="15" letter-spacing="3">OBSERVE. DEFINE. TEST. REVIEW.</text>
+<g fill="none" stroke="#32465e"><rect x="804" y="64" width="390" height="232" rx="16"/><path d="M828 128H1170M828 192H1170M934 88V272"/></g>
+<g font-family="Arial, sans-serif">
+<text x="828" y="108" fill="#76d9d4" font-size="13" letter-spacing="2">01 / 02</text>
+<text x="960" y="108" fill="#e1eaf6" font-size="20">LEARN</text>
+<text x="828" y="172" fill="#86bbf0" font-size="13" letter-spacing="2">03 / 04</text>
+<text x="960" y="172" fill="#e1eaf6" font-size="20">VALIDATE</text>
+<text x="828" y="236" fill="#a6b7d3" font-size="13" letter-spacing="2">05 / +</text>
+<text x="960" y="236" fill="#e1eaf6" font-size="20">REFINE</text>
+<text x="960" y="265" fill="#7c92ae" font-size="11" letter-spacing="2">EVIDENCE FIRST</text>
+</g>
+</svg>
