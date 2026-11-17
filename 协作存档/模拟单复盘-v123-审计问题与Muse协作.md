@@ -1,26 +1,27 @@
 # 模拟单复盘 v123 · 代码审计与 Muse 协作任务
 
-> **协作文件（可更新）**。本文件为 Muse / GPT 后续核对与修复的唯一持续维护清单；第十六章 v123 已从 main 分支删除，仅保留 Git 历史快照供审计追溯；当前可用完整快照是第十七章 v126，后续修复请直接更新本协作文档。问题讨论见 [Issue #1](https://github.com/Rd6696/trading-manual/issues/1)。状态默认「待核对」，指尚未确认当前线上版本是否仍存在，并不表示全部是线上现存缺陷。
+> **协作文件（可更新）**。本文件为 Muse / GPT 后续核对与修复的唯一持续维护清单；第十六章 v123 已从 main 分支删除，仅保留 Git 历史快照供审计追溯；当前可用完整快照是第十八章 v129，后续修复请直接更新本协作文档。问题讨论见 [Issue #1](https://github.com/Rd6696/trading-manual/issues/1)。状态默认「待核对」，指尚未确认当前线上版本是否仍存在，并不表示全部是线上现存缺陷。
 
 - **历史代码基准**：[第十六章 v123（Git 历史）](https://github.com/Rd6696/trading-manual/blob/11ee45f63652f9576ab878fa26e9168d64837d62/16-%E6%A8%A1%E6%8B%9F%E5%8D%95%E5%A4%8D%E7%9B%98%E7%A9%BA%E9%97%B4-%E5%85%A8%E9%87%8F%E5%AD%98%E6%A1%A3.md)（2026-11-17 10:55 CST）
-- **协作进度**：待 Muse 回执；线上最新版本需由 Muse 查证
+- **协作进度**：Muse 第二批回执已更新（2026-11-17）；线上最新版本 v129（服务端 v128＋客户端 v129），全量源码见第十八章存档（commit 380e1c4f）
 - **数据回归基线**：90 条 / +18.39R / 19 盈 8 亏（仅 v123 存档快照）
 
 ## 跟踪表（Muse 更新本表）
 
 | 编号 | 级别 | 当前状态 | 负责人 | 修复版本/提交 | 验证及备注 |
 |---|---|---|---|---|---|
-| P1-37 | 高 | 代码修复确认；并发未验收 | Muse / GPT复审 | v125/v126 | v125 CAS 已加；需真实改判交错 |
-| P1-38 | 高 | 部分修复；展示缺口 | Muse / GPT复审 | v125/v126 | data_status!=ok 不落库，但前端仍可显示推导开仓时间 |
-| P1-39 | 高 | 代码修复确认；边界未验收 | Muse / GPT复审 | v125/v126 | 复盘截止 closeAt 守卫在位；缺真实边界测试 |
+| P1-37 | 高 | 已修改待验证；并发交错未验证 | Muse / GPT复审 | v125 CAS；v128 守卫复核在位（第十八章） | 沙箱 action 执行模型无法在单次调用中途插入 saveReview 改判，交错样本未验证（缺中途注入手段）；守卫位置 actions.ts getConditionStates CAS UPDATE（:2577 起，WHERE 钉 id+triggered_at IS NULL+verdict/reviewed_at/triggered_at_unverified 快照值，.returning() 恰中 1 行）；未动数据；回滚 restore v127 |
+| P1-38 | 高 | 已修改待验证；展示缺口已收口 | Muse / GPT复审 | v125 不落库；v128 服务端确认契约；v129 客户端门控 | 服务端：推导未落库时 triggered_at=null、triggered_at_confirmed=false、推导值只进 provisional_triggered_at（沙箱实测 30 条状态全 confirmed=true）；客户端 6 处消费点全部门控、未确认改显「置单 · 开仓时间待核实」，构造状态 6 用例代码路径级全过；现行渲染与改前一致；未动数据；回滚 restore v128 |
+| P1-39 | 高 | 已修改待验证；跨截止样本已补 | Muse / GPT复审 | v125 守卫；v128 函数级运行时样本 | 桩 K 线驱动生产 deriveTriggeredAt（candles.ts:59）：reviewedAt 落跨界根中段且仅该根触价 → 不推导；截止前已闭合根触价 → 正常推导；未动数据；回滚 restore v127 |
 | P1-41 | 高 | 代码确认；独立样本通过 | Muse / GPT复审 | v125/v126 | 真实 exit_price 贯通前后端；保留 TP1 规则 |
 | P2-36 | 中 | 代码修复确认 | Muse / GPT复审 | v125/v126 | reasoningReview 加入幂等比较；Muse 报沙箱测试 |
 | P2-40 | 中 | 代码修复确认；构建未亲验 | Muse / GPT复审 | v125/v126 | 服务端死码已删；Muse 报类型检查通过 |
-| P2-06 | 历史 | 未闭环；独立复现缺口 | Muse / GPT复审 | v125/v126 | 同 batch_key 同价格但修改 rationale 等仍能重放；故障竞态未验 |
-| P2-22 | 历史 | 风险治理已成文；演练待做 | Muse / GPT复审 | v125/v126 | 0006 保持历史不变；新环境恢复流程未实测 |
-| P2-33 | 历史 | 设计决策待用户确认 | Muse / GPT复审 | v125/v126 | 删除会 scrub 批次 ID，但 coin_accounts 仍不联动 |
-| P2-34 | 历史 | 部分修复；调用方未启用 | Muse / GPT复审 | v125/v126 | expected_version 可选；两个 cron 仍不传，可旧值覆盖 |
+| P2-06 | 历史 | 已修改待验证；全载荷指纹已落地 | Muse / GPT复审 | v128 | 沙箱副本 action 运行时实测：改 rationale/opened_at/plan/entry_type 均被拒、同载荷逐字相同正常重放返原 ids 不新增行；主路径与自愈分支共用 batchRowMatchesPayload 全字段比对（自愈分支运行时重放未验证：沙箱无手段强制 inserted_ids 回填失败）；并发交错/故障注入未验证；未动生产数据（测试在沙箱副本、测试行已清除）；回滚 restore v127 |
+| P2-22 | 历史 | 演练已完成 | Muse / GPT复审 | 方案 §5 不变；演练 2026-11-17 | 沙箱副本实演：迁移至 0005 → 身份预检 12 pass/2 fail（id 75/80 干扰行）→ 裸 0006 副本演示静默误写 2 行 → 守卫回填写入 12/跳过 2/幂等复跑 0 → 逐笔核对 14/14；记录 goals/goal-2/hidden_files/p2-22-drill-2026-11-17.md；生产 0006 与存量一字未动 |
+| P2-33 | 历史 | 定案（维持不联动） | Muse / GPT复审 | 不改代码 | 定案：删空间交易不联动 coin_accounts，余额真源为台账/coin_accounts.json、由结算流程维护；Muse 已向 RGB 说明并建议此口径，RGB 2026-11-17 批准第二批时未改；如 RGB 改口可翻案重开 |
+| P2-34 | 历史 | 已修改待验证；调用方已接入 | Muse / GPT复审 | v125 action；2026-11-17 两 cron 改口径 | okx-demo-daily-round 与 okx-demo-watch 已改为：先 getCoinAccounts 读 version → setCoinBalance 传 expected_version → 冲突则重读 coin_accounts.json 真源重算后重试一次（cron.view 复核在位）；空间 action 可选参数保留兼容手动调用、描述已注记（v128）；未动数据 |
 | P2-35 | 历史 | 代码修复确认 | Muse / GPT复审 | v125/v126 | 当天标签三条件及上海时间定时/聚焦刷新已在位 |
+| P2-42 | 中 | 已修改待验证 | Muse / GPT复审 | v128 | 分页覆盖完整性：中段空窗/尾端未达/内部缺口任一 → insufficient_history 且不落库，判定抽纯函数 candleCoverageStatus（candles.ts:132）；桩数据函数级运行时 10/10 通过（含 3 窗中段空窗、尾窗未达 capSec 两类样本）；未动数据；回滚 restore v127 |
 
 **状态规范**：待核对 → 确认存在 / 最新版已修复 / 不适用 → 已修改待验证 → 已验收。每一项需附 commit、改动文件、复现前后结果和回滚方案；不允许仅标“已修”而无证据。
 
@@ -59,6 +60,7 @@
 |---|---|---|
 | 2026-11-17 | GPT | 从第十六章审计评论与 Issue #1 整理为独立协作文件；11 项待核对，未修改产品代码与历史数据 |
 | 2026-11-17 | GPT | 对 v126 独立源码复审与 90 条数据复算；复核 v127 回执但无源码；更新 11 项状态，新增 P2-42 |
+| 2026-11-17 | Muse | 第二批修复回执：P2-06 全载荷指纹（v128，沙箱运行时实测）、P2-34 两 cron 接入版本守卫、P1-38 服务端确认契约（v128）＋客户端门控（v129）、P2-42 已修（v128，函数级样本 10/10）、P1-39 跨截止样本补齐（函数级运行时）、P1-37 交错仍未验证、P2-22 沙箱演练完成、P2-33 定案登记；第十八章 v129 全量存档已推送（commit 380e1c4f）；基线 90 条/+17.39R/19 盈 9 亏改前改后一致、未动存量与 TP1 口径 |
 
 ## Muse 回执格式
 
